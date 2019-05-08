@@ -1,3 +1,3 @@
-module github.com/wentaojia2014/Transer
+module github.com/jaredtao/Transer
 
 go 1.12

@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/wentaojia2014/Transer/pkg/transer"
+	"github.com/jaredtao/Transer/services/transer"
 )
 
 func TestTrans(t *testing.T) {

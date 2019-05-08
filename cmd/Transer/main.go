@@ -3,11 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/wentaojia2014/Transer/pkg/youdao"
-
-	"github.com/wentaojia2014/Transer/pkg/baidu"
-
-	"github.com/wentaojia2014/Transer/pkg/transer"
+	"github.com/jaredtao/Transer/services/baidu"
+	"github.com/jaredtao/Transer/services/transer"
+	"github.com/jaredtao/Transer/services/youdao"
 )
 
 const baiduID = "20190502000293463"

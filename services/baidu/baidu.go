@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/wentaojia2014/Transer/pkg/transer"
+	"github.com/jaredtao/Transer/services/transer"
 )
 
 const baiduAPI = "https://api.fanyi.baidu.com/api/trans/vip/translate"
