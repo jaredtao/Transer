@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/jaredtao/Transer/services/baidu"
@@ -14,23 +15,31 @@ const baiduSecret = "0d2RvCho9XZNEO5GCGNs"
 const youdaoID = "1bd659586c52ea1d"
 const youdaoSecret = "5ZktXhHfLCpI0KnAdcxx4cPyGJwcVXaV"
 
+var api = flag.String("api", "baidu", "baidu | youdao")
+var userID = flag.String("userID", "20190502000293463", "your id")
+var secret = flag.String("secret", "0d2RvCho9XZNEO5GCGNs", "your secret")
+var originText = flag.String("text", "Hello World", "the text need translate")
+var targetLan = flag.String("targetLang", "zh", "zh | en | ja | ko | fr | es | pt | it | ru | vi | de | ar | id")
+
 func main() {
-
+	flag.Parse()
 	input := &transer.TransInput{
-		ID:     baiduID,
-		Secret: baiduSecret,
+		ID:     *userID,
+		Secret: *secret,
+		Query:  *originText,
+		To:     *targetLan,
 	}
-	input.Query = "黄河远上白云间，一片孤城万仞山"
-	input.To = baidu.En
-	res := baidu.Trans(input)
-	fmt.Println(res.Result)
-
-	fmt.Println("---------------")
-
-	input.ID = youdaoID
-	input.Secret = youdaoSecret
-	input.To = youdao.En
-	res = youdao.Trans(input)
-	fmt.Println(res.Result)
-
+	var result *transer.TransOutput
+	if *api == "baidu" {
+		ok, to := baidu.LanConvertFromYouDao(*targetLan)
+		if ok {
+			input.To = to
+		}
+		result = baidu.Trans(input)
+	} else if *api == "youdao" {
+		result = youdao.Trans(input)
+	} else {
+		flag.PrintDefaults()
+	}
+	fmt.Println(result.Result)
 }

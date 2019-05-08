@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/jaredtao/Transer/services/transer"
+	"github.com/jaredtao/Transer/services/youdao"
 )
 
 const baiduAPI = "https://api.fanyi.baidu.com/api/trans/vip/translate"
@@ -75,6 +76,59 @@ const (
 	//Vie 越南语
 	Vie = "vie"
 )
+
+//LanConvertFromYouDao convert
+func LanConvertFromYouDao(originLan string) (ok bool, targetLan string) {
+	ok = true
+	targetLan = originLan
+	switch originLan {
+	case youdao.Auto:
+		targetLan = Auto
+		//Zh 中文
+	case youdao.Zh:
+		targetLan = Zh
+		//En 英文
+	case youdao.En:
+		targetLan = En
+		//Ja 日文
+	case youdao.Ja:
+		targetLan = Jp
+		//Ko 韩文
+	case youdao.Ko:
+		targetLan = Kor
+		//Fr 法文
+	case youdao.Fr:
+		targetLan = Fra
+		//Es 西班牙文
+	case youdao.Es:
+		targetLan = Est
+		//Pt 葡萄牙文
+	case youdao.Pt:
+		targetLan = Pt
+		//It 意大利文
+	case youdao.It:
+		targetLan = It
+		//Ru 俄文
+	case youdao.Ru:
+		targetLan = Ru
+		//Vi 越南文
+	case youdao.Vi:
+		targetLan = Vie
+		//De 德文
+	case youdao.De:
+		targetLan = De
+		//Ar 阿拉伯文
+	case youdao.Ar:
+		targetLan = Ara
+		//Id 印尼文
+	case youdao.Id:
+		targetLan = ""
+		ok = false
+	default:
+		ok = false
+	}
+	return
+}
 
 //transItem  one Trans item
 type transItem struct {

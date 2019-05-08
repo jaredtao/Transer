@@ -4,6 +4,11 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
+
+	"github.com/jaredtao/Transer/services/baidu"
+	"github.com/jaredtao/Transer/services/youdao"
+
+	"github.com/jaredtao/Transer/services/transer"
 )
 
 const head = `
@@ -35,28 +40,64 @@ type ts struct {
 	Contexts []context `xml:"context"`
 }
 
+//QtTransArgs args
+type QtTransArgs struct {
+	InputFile  string
+	OutputFile string
+	API        string
+	ID         string
+	Secret     string
+	TargetLan  string
+}
+
 //Trans trans
-func Trans(inFile, outFile string) {
+func Trans(args QtTransArgs) {
 	// filePath := "trans_zh.tr"
-	data, err := ioutil.ReadFile(inFile)
+	data, err := ioutil.ReadFile(args.InputFile)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	q := &ts{}
-	err = xml.Unmarshal(data, &q)
+	transData := &ts{}
+	err = xml.Unmarshal(data, &transData)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	//TODO  add trans flow
+	input := &transer.TransInput{
+		ID:     args.ID,
+		Secret: args.Secret,
+		To:     args.TargetLan,
+	}
+	transData.Language = args.TargetLan
+	for i := 0; i < len(transData.Contexts); i++ {
+		ctx := &transData.Contexts[i]
+		for j := 0; j < len(ctx.Messages); j++ {
+			msg := &ctx.Messages[j]
+			input.Query = msg.Source
+			if args.API == "baidu" {
+				ans := baidu.Trans(input)
+				if ans.Result != "" {
+					msg.Trans.Trans = ans.Result
+					msg.Trans.Type = ""
+				}
+			} else if args.API == "youdao" {
+				ans := youdao.Trans(input)
+				if ans.Result != "" {
+					msg.Trans.Trans = ans.Result
+					msg.Trans.Type = ""
+				}
+			}
+		}
+	}
 
-	res, err := xml.MarshalIndent(&q, "", "    ")
+	res, err := xml.MarshalIndent(&transData, "", "    ")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	err = ioutil.WriteFile(outFile, res, 0666)
+	err = ioutil.WriteFile(args.OutputFile, res, 0666)
 	if err != nil {
 		fmt.Println(err)
 		return
