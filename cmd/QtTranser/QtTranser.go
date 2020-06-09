@@ -71,6 +71,7 @@ func Trans(args QtTransArgs) {
 		To:     args.TargetLan,
 	}
 	alreadyTranNum := 0
+	baidu.ResetFailedCnt()
 	transData.Language = args.TargetLan
 	for i := 0; i < len(transData.Contexts); i++ {
 		ctx := &transData.Contexts[i]

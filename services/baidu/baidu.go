@@ -151,6 +151,11 @@ func GetFailedCnt() int {
 	return gFailedCnt
 }
 
+//ResetFailedCnt ResetFailedCnt
+func ResetFailedCnt() {
+	gFailedCnt = 0
+}
+
 //Trans trans
 func Trans(input *transer.TransInput) *transer.TransOutput {
 	output := new(transer.TransOutput)
