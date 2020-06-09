@@ -70,12 +70,17 @@ func Trans(args QtTransArgs) {
 		Secret: args.Secret,
 		To:     args.TargetLan,
 	}
+	alreadyTranNum := 0
 	transData.Language = args.TargetLan
 	for i := 0; i < len(transData.Contexts); i++ {
 		ctx := &transData.Contexts[i]
 		for j := 0; j < len(ctx.Messages); j++ {
 			msg := &ctx.Messages[j]
-			input.Query = msg.Source
+			if msg.Trans.Trans != "" {
+				input.Query = msg.Trans.Trans
+			} else {
+				input.Query = msg.Source
+			}
 			if args.API == "baidu" {
 				ans := baidu.Trans(input)
 				if ans.Result != "" {
@@ -89,8 +94,11 @@ func Trans(args QtTransArgs) {
 					msg.Trans.Type = ""
 				}
 			}
+			alreadyTranNum++
+			fmt.Printf("translate %d words already.\r\n", alreadyTranNum)
 		}
 	}
+	fmt.Printf("baidu translate %d words failed.\r\n", baidu.GetFailedCnt())
 
 	res, err := xml.MarshalIndent(&transData, "", "    ")
 	if err != nil {
