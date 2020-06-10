@@ -143,6 +143,19 @@ type result struct {
 	TransResult []transItem `json:"trans_result"`
 }
 
+var glastApiTime int64
+var gFailedCnt int //翻译失败总数量
+
+//GetFailedCnt GetFailedCnt
+func GetFailedCnt() int {
+	return gFailedCnt
+}
+
+//ResetFailedCnt ResetFailedCnt
+func ResetFailedCnt() {
+	gFailedCnt = 0
+}
+
 //Trans trans
 func Trans(input *transer.TransInput) *transer.TransOutput {
 	output := new(transer.TransOutput)
@@ -160,19 +173,25 @@ func Trans(input *transer.TransInput) *transer.TransOutput {
 	values["appid"] = []string{input.ID}
 	values["salt"] = []string{salt}
 	values["sign"] = []string{signStr}
+	crtTime := time.Now().UnixNano()
+	tmWait := 1e9 - (crtTime - glastApiTime)
+	if tmWait > 0 {
+		time.Sleep(time.Duration(tmWait)) //免费用户1秒只能请求一次
+	}
 	res, err := http.PostForm(baiduAPI, values)
 	if err != nil {
 		fmt.Println(err)
 		return output
 	}
 	defer res.Body.Close()
+	glastApiTime = time.Now().UnixNano()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println(err)
 		return output
 	}
-	// fmt.Println(string(body))
+	//fmt.Println("ret:" + string(body))
 	r := &result{}
 	err = json.Unmarshal(body, &r)
 	if err != nil {
@@ -183,6 +202,8 @@ func Trans(input *transer.TransInput) *transer.TransOutput {
 		// fmt.Println(r.TransResult[0].Src)
 		// fmt.Println(r.TransResult[0].Dst)
 		output.Result = r.TransResult[0].Dst
+	} else {
+		gFailedCnt++
 	}
 	return output
 }
